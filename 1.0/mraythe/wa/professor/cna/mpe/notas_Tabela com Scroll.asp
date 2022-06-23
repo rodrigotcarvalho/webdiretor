@@ -1,0 +1,1509 @@
+<%'On Error Resume Next%>
+<!--#include file="../../../../../global/mensagens.asp" -->
+<!--#include file="../../../../inc/caminhos.asp"-->
+<!--#include file="../../../../inc/parametros.asp"-->
+<!--#include file="../../../../inc/utils.asp"-->
+<!--#include file="../../../../inc/funcoes.asp"-->
+<!--#include file="../../../../inc/funcoes2.asp"-->
+
+
+
+<%
+opt=request.QueryString("opt")
+obr = request.QueryString("obr")
+autoriza=session("autoriza")
+grupo_usuario=session("grupo_usuario") 
+nvg = session("chave")
+ano_letivo = request.QueryString("ano")
+co_usr = session("co_user")
+grupo=session("grupo")
+chave=nvg
+session("chave")=chave
+ano_info=nivel&"-"&chave&"-"&ano_letivo
+nivel=4
+trava=session("trava")
+nvg_split=split(nvg,"-")
+sistema_local=nvg_split(0)
+modulo=nvg_split(1)
+setor=nvg_split(2)
+funcao=nvg_split(3)
+
+		Set CON = Server.CreateObject("ADODB.Connection") 
+		ABRIR = "DBQ="& CAMINHO & ";Driver={Microsoft Access Driver (*.mdb)}"
+		CON.Open ABRIR
+		
+		Set CONer= Server.CreateObject("ADODB.Connection") 
+		ABRIRer = "DBQ="& CAMINHO_al & ";Driver={Microsoft Access Driver (*.mdb)}"
+		CONer.Open ABRIRer		
+
+		Set CONg = Server.CreateObject("ADODB.Connection") 
+		ABRIRg = "DBQ="& CAMINHO_g & ";Driver={Microsoft Access Driver (*.mdb)}"
+		CONg.Open ABRIRg		
+		
+		Set CON0= Server.CreateObject("ADODB.Connection") 
+		ABRIR0 = "DBQ="& CAMINHO_pr & ";Driver={Microsoft Access Driver (*.mdb)}"
+		CON0.Open ABRIR0
+		
+
+
+if opt = "err6" then
+
+	dados= split(obr, "$!$" )
+	co_materia = dados(0)
+	unidade= dados(1)
+	curso= dados(2)
+	etapa= dados(3)
+	turma= dados(4)
+	periodo = dados(5)
+	ano_letivo = dados(6)
+	co_prof = dados(7)
+	co_usr = session("co_usr")
+	
+	hp= request.QueryString("hp")
+	alt= split(hp, "_" )
+	errante=alt(1)
+	qerrou= alt(2)
+	errou = alt(3)
+	
+	valido="n"
+
+	if errante=0 then
+	
+	else
+	
+	num_erro= split(errou, "$" )
+	campo_errado=num_erro(0)
+	
+	
+			Set RSer  = Server.CreateObject("ADODB.Recordset")
+			SQL_er  = "Select * from TB_Matriculas WHERE CO_Matricula = "& errante
+			Set RSer  = CONer.Execute(SQL_er )
+			
+	num_chamada_erro = RSer("NU_Chamada")
+	local_form=campo_errado&"_"&num_chamada_erro
+	javascript="onLoad='nota."&local_form&".focus();'"
+	end if
+
+elseif opt="ok" or  opt= "vt" then
+	dados= split(obr, "$!$")
+	co_materia = dados(0)
+	unidade= dados(1)
+	curso= dados(2)
+	etapa= dados(3)
+	turma= dados(4)
+	periodo = dados(5)
+	ano_letivo = dados(6)
+	co_prof = dados(7)
+	co_usr = session("co_usr")
+	
+	errante=0
+	valido="s"
+	javascript=""
+	
+elseif opt="cln" then
+	dados= split(obr, "$!$")
+	co_materia = dados(0)
+	unidade= dados(1)
+	curso= dados(2)
+	etapa= dados(3)
+	turma= dados(4)
+	periodo = dados(5)
+	ano_letivo = dados(6)
+	co_prof = dados(7)
+	co_usr = session("co_usr")
+	
+	errante=0
+	valido="s"
+	javascript=""
+	
+elseif opt="cgp" then
+	co_materia = request.QueryString("d")
+	unidade= request.QueryString("u")
+	curso= request.QueryString("c")
+	etapa= request.QueryString("e")
+	turma= request.QueryString("t")
+	periodo = request.QueryString("p")
+	co_prof = request.QueryString("pr")
+	co_usr = session("co_usr")
+	
+	errante=0
+	valido="s"
+	javascript=""
+else
+	grava_nota=session("grava_nota")
+	
+	dados= split(grava_nota, "?" )
+	unidade= dados(0)
+	curso= dados(1)
+	etapa= dados(2)
+	turma= dados(3)
+	co_materia = request.querystring("d")
+	periodo = request.querystring("p")
+	co_prof = request.querystring("pr")
+	co_usr = session("co_usr")
+	
+	errante=0
+	valido="s"
+	javascript=""
+end if
+session("co_materia")=co_materia
+session("unidades")=unidade
+session("grau")=curso
+session("serie")=etapa
+session("turma")=turma
+session("periodo")=periodo
+session("co_prof") = co_prof 
+
+
+obr=co_materia&"$!$"&unidade&"$!$"&curso&"$!$"&etapa&"$!$"&turma&"$!$"&periodo&"$!$"&ano_letivo&"$!$"&co_prof
+
+
+		Set RS = Server.CreateObject("ADODB.Recordset")
+		CONEXAO = "Select * from TB_Da_Aula WHERE NU_Unidade = "& unidade &" AND CO_Curso = '"& curso &"' AND CO_Etapa = '"& etapa &"' AND CO_Turma = '"& turma &"'"
+		Set RS = CONg.Execute(CONEXAO)
+
+
+if RS.EOF then
+response.Write("<div align=center><font size=2 face=Courier New, Courier, mono  color=#990000><b>Esta turma não está disponível no momento</b></font><br")
+response.Write("<font size=2 face=Courier New, Courier, mono  color=#990000><a href=javascript:window.history.go(-1)>voltar</a></font></div>")
+
+else
+nota = RS("TP_Nota")
+coordenador = RS("CO_Cord")
+end if
+session("obr")=obr
+session("nota")=nota
+session("coordenador")=coordenador
+ call navegacao (CON,chave,nivel)
+navega=Session("caminho")
+%>
+<html>
+<head>
+<title>Web Diretor</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" href="../../../../estilos.css" type="text/css">
+<script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+
+$(document).ready(function () {
+
+    // Ao mover a barra de rolagem da tabela, mover seus cabecalhos e o 'versus'
+
+    $("div#tabela").scroll(function () {
+
+        $('div#tabela #cabecalhoHorizontal, #versus').css('top', $(this).scrollTop());
+
+        $('div#tabela #cabecalhoVertical, #versus').css('left', $(this).scrollLeft());
+
+    });
+
+});
+
+</script>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+
+function MM_popupMsg(msg) { //v1.0
+  alert(msg);
+}
+//-->
+</script>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_goToURL() { //v3.0
+  var i, args=MM_goToURL.arguments; document.MM_returnValue = false;
+  for (i=0; i<(args.length-1); i+=2) eval(args[i]+".location='"+args[i+1]+"'");
+}
+//-->
+</script>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_nbGroup(event, grpName) { //v6.0
+  var i,img,nbArr,args=MM_nbGroup.arguments;
+  if (event == "init" && args.length > 2) {
+    if ((img = MM_findObj(args[2])) != null && !img.MM_init) {
+      img.MM_init = true; img.MM_up = args[3]; img.MM_dn = img.src;
+      if ((nbArr = document[grpName]) == null) nbArr = document[grpName] = new Array();
+      nbArr[nbArr.length] = img;
+      for (i=4; i < args.length-1; i+=2) if ((img = MM_findObj(args[i])) != null) {
+        if (!img.MM_up) img.MM_up = img.src;
+        img.src = img.MM_dn = args[i+1];
+        nbArr[nbArr.length] = img;
+    } }
+  } else if (event == "over") {
+    document.MM_nbOver = nbArr = new Array();
+    for (i=1; i < args.length-1; i+=3) if ((img = MM_findObj(args[i])) != null) {
+      if (!img.MM_up) img.MM_up = img.src;
+      img.src = (img.MM_dn && args[i+2]) ? args[i+2] : ((args[i+1])? args[i+1] : img.MM_up);
+      nbArr[nbArr.length] = img;
+    }
+  } else if (event == "out" ) {
+    for (i=0; i < document.MM_nbOver.length; i++) {
+      img = document.MM_nbOver[i]; img.src = (img.MM_dn) ? img.MM_dn : img.MM_up; }
+  } else if (event == "down") {
+    nbArr = document[grpName];
+    if (nbArr)
+      for (i=0; i < nbArr.length; i++) { img=nbArr[i]; img.src = img.MM_up; img.MM_dn = 0; }
+    document[grpName] = nbArr = new Array();
+    for (i=2; i < args.length-1; i+=2) if ((img = MM_findObj(args[i])) != null) {
+      if (!img.MM_up) img.MM_up = img.src;
+      img.src = img.MM_dn = (args[i+1])? args[i+1] : img.MM_up;
+      nbArr[nbArr.length] = img;
+  } }
+}
+
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresiz!=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+
+function MM_openBrWindow(theURL,winName,features) { //v2.0
+  window.open(theURL,winName,features);
+}
+function submitano()  
+{
+   var f=document.forms[0]; 
+      f.submit(); 
+}
+function submitsistema()  
+{
+   var f=document.forms[1]; 
+      f.submit(); 
+}
+function submitrapido()  
+{
+   var f=document.forms[2]; 
+      f.submit(); 
+}  
+function submitfuncao()  
+{
+   var f=document.forms[3]; 
+      f.submit(); 
+} 
+
+function mudar_cor_focus(celula){
+   celula.style.backgroundColor="#D8FF9D"
+
+}
+function mudar_cor_blur_par(celula){
+   celula.style.backgroundColor="#FFFFFF"
+} 
+function mudar_cor_blur_impar(celula){
+   celula.style.backgroundColor="#FFFFE1"
+} 
+function mudar_cor_blur_erro(celula){
+   celula.style.backgroundColor="#CC0000"
+}  
+function checksubmit()
+{
+// if (document.nota.pt.value == "")
+//  {    alert("Por favor digite um peso para os Testes!")
+//    document.nota.pt.focus()
+//    return false
+//  }
+//  if (isNaN(document.nota.pt.value))
+//  {    alert("O peso dos Testes deve ser um número!")
+//    document.nota.pt.focus()
+//    return false
+//  }  
+//    if (document.nota.pp.value == "")
+//  {    alert("Por favor digite um peso para as Provas!")
+//    document.nota.pp.focus()
+//    return false
+//  }
+//  if (isNaN(document.nota.pp.value))
+//  {    alert("O peso das Provas deve ser um número!")
+//    document.nota.pp.focus()
+//    return false
+//  }
+  return true
+}
+//-->
+</script>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_callJS(jsStr) { //v2.0
+  return eval(jsStr)
+}
+//-->
+</script>
+<script language="javascript"> 
+  
+    function keyPressed(TB, e, max_right, max_bottom)  
+    { 
+        if (e.keyCode == 40 || e.keyCode == 13) { // arrow down 
+            if (TB.split("c")[0] < max_bottom) 
+            document.getElementById(eval(TB.split("c")[0] + '+1') + 'c' + TB.split("c")[1]).focus(); 
+            if (TB.split("c")[0] == max_bottom) 
+            document.getElementById(1 + 'c' + TB.split("c")[1]).focus();
+
+
+        } 
+  
+        if (e.keyCode == 38) { // arrow up 
+            if(TB.split("c")[0] > 1) 
+            document.getElementById(eval(TB.split("c")[0] + '-1') + 'c' + TB.split("c")[1]).focus(); 
+            if (TB.split("c")[0] == 1) 
+            document.getElementById(max_bottom + 'c' + TB.split("c")[1]).focus(); 
+		
+        } 
+  
+        if (e.keyCode == 37) { // arrow left 
+            if(TB.split("c")[1] > 1) 
+            document.getElementById(TB.split("c")[0] + 'c' + eval(TB.split("c")[1] + '-1')).focus();             
+            if (TB.split("c")[1] == 1) 
+            document.getElementById(TB.split("c")[0] + 'c' + max_right).focus(); 
+
+		}   
+  
+        if (e.keyCode == 39) { // arrow right 
+            if(TB.split("c")[1] < max_right) 
+            document.getElementById(TB.split("c")[0] + 'c' + eval(TB.split("c")[1] + '+1')).focus();  
+            if (TB.split("c")[1] == max_right) 
+            document.getElementById(TB.split("c")[0] + 'c' + 1).focus(); 
+
+		}                  
+    } 
+  
+</script> 
+<style type="text/css">
+
+	body
+
+	{
+
+		font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+
+		font-size:13px;
+
+	}
+
+	div#tabela
+
+	{
+
+		width: 800px;      /* Largura da minha tabela na tela */
+
+		height: 600px;     /* Altura da minha tabela na tela */
+
+		overflow: auto;    /* Barras de rolagem automáticas nos eixos X e Y */
+
+		margin: 0 auto;    /* O 'auto' é para ficar no centro da tela */
+
+		position:relative; /* Necessário para os cabecalhos fixos */
+
+		top:0;             /* Necessário para os cabecalhos fixos */
+
+		left:0;            /* Necessário para os cabecalhos fixos */
+
+	}
+
+	div#tabela table
+
+	{
+
+		border-collapse:collapse; /* Sem espaços entre as células */
+
+	}
+
+	div#tabela table td
+
+	{
+
+		font-size:12px;
+
+		font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+
+		border:1px solid #d8d8d8;	
+
+		width:70px;      /* Células precisam ter altura e largura fixas */
+
+		min-width:70px;  /* Se você não colocar isso, as células menores que 70px vão ser diminuídas */
+
+		max-width:70px; 
+
+		height:30px;
+
+		min-height:30px;
+
+		max-height:30px;
+
+	}
+
+	div#tabela table#cabecalhoHorizontal td, 
+
+	div#tabela table#cabecalhoVertical td 
+
+	{
+
+		background-color:buttonface;
+
+	}
+
+	div#tabela table#cabecalhoHorizontal
+
+	{
+
+		margin-left:72px;  /* 70px de largura do cabecalho vertical + 2 pixels das bordas do cabecalho */
+
+		position:absolute; /* Posição variável em relação ao topo da div#tabela */
+
+		top:0;             /* Posição inicial em relação ao topo da div#tabela */
+
+		z-index:5;         /* Para ficar por cima da tabela de dados */
+
+	}
+
+	div#tabela table#cabecalhoHorizontal td 
+
+	{
+
+		text-align:center;
+
+		vertical-align:middle;
+
+	}
+
+	div#tabela table#cabecalhoVertical
+
+	{
+
+		margin-top:33px;   /* 30px de altura do cabecalho horizontal + 2 pixels das bordas do cabecalho + 1px */
+
+		position:absolute; /* Posição variável em relação a esquerda da div#tabela */
+
+		left:0;            /* Posição inicial em relação a esquerda da div#tabela */
+
+		z-index:5;         /* Para ficar por cima da tabela de dados */
+
+	}
+
+	div#tabela table#cabecalhoVertical td
+
+	{
+
+		white-space:nowrap; /* Não quebrar linhas */
+
+		text-align:left;
+
+
+
+		/* Aqui temos um problema: preciso de uma margem, mas a largura da margem é somada à largura
+
+		 * da célula e por isso a largura extrapola o tamanho máximo definido (70px). 
+
+		 * Por isso, aqui eu diminuo a largura para, somada à margem, ficar do tamanho certo.
+
+		*/
+
+		width:65px;
+
+		min-width:65px;
+
+		max-width:65px;
+
+		padding-left:5px;
+
+	}
+
+	div#tabela table#dados
+
+	{
+
+		margin-top:33px;  /* 30px de altura do cabecalho horizontal + 2 pixels das bordas do cabecalho + 1 px*/
+
+		margin-left:72px; /* 70px de largura do cabecalho vertical + 2 pixels das bordas do cabecalho */
+
+		z-index:2;		  /* Menor que dos cabecalhos, para que fique por detrás deles */
+
+	}
+
+	div#tabela table#dados td
+
+	{
+
+		background:white;
+
+		text-align:center;
+
+	}
+
+	
+
+	/* Célula com o 'X', que virtualmente pertence ao cabecalho vertical e horizontal */
+
+	div#tabela #versus
+
+	{
+
+ 		display:inline-block;
+
+		position:absolute;
+
+		top:0;
+
+		left:0;
+
+		z-index:10;
+
+
+
+		height:32px;
+
+		line-height:32px;
+
+		width:71px;
+
+		min-width:71px;
+
+		
+
+		text-align:center;
+
+		vertical-align:middle;
+
+		border:1px solid #d8d8d8;
+
+		background-color:#F4FAE8;
+
+		color:#A1D16D;
+
+	}
+
+</style>
+</head>
+
+<body leftmargin="0" topmargin="0" marginwidth="0" background="../../../../img/fundo.gif" marginheight="0" <%response.Write(javascript)%>>
+<%IF imprime="1"then
+else
+ call cabecalho (nivel) 
+ end if%>
+<table width="1000" height="650" border="0" align="center" cellpadding="0" cellspacing="0" background="../../../../img/fundo_interno.gif" bgcolor="#FFFFFF">
+  <tr> 
+    <td height="10" valign="top" class="tb_caminho"><font class="style-caminho"> 
+      <%
+	  response.Write(navega)
+
+%>
+      </font> </td>
+  </tr>
+    <%
+
+	
+
+call GeraNomes(co_materia,unidade,curso,etapa,CON0)
+
+no_materia= session("no_materia")
+no_unidade= session("no_unidades")
+no_curso= session("no_grau")
+no_etapa= session("no_serie")
+
+
+nome_prof = session("nome_prof") 
+tp=	session("tp")
+
+ano = DatePart("yyyy", now)
+mes = DatePart("m", now) 
+dia = DatePart("d", now) 
+hora = DatePart("h", now) 
+min = DatePart("m", now) 
+data = dia &"/"& mes &"/"& ano
+horario = hora & ":"& min
+acesso_prof = session("acesso_prof")
+
+
+
+		
+		Set RS = Server.CreateObject("ADODB.Recordset")
+		CONEXAO = "Select * from TB_Da_Aula WHERE CO_Professor= "& co_prof &"AND NU_Unidade = "& unidade &" AND CO_Curso = '"& curso &"' AND CO_Etapa = '"& etapa &"' AND CO_Turma = '"& turma &"' AND CO_Materia_Principal = '"& co_materia &"'"
+		Set RS = CONg.Execute(CONEXAO)
+periodo=periodo*1
+if periodo=1 then
+	ST_Per_1 = RS("ST_Per_1")
+elseif periodo=2 then
+	ST_Per_2 = RS("ST_Per_2")
+elseif periodo=3 then
+	ST_Per_3 = RS("ST_Per_3")
+elseif periodo=4 then
+	ST_Per_4 = RS("ST_Per_4")
+elseif periodo=5 then
+	ST_Per_5 = RS("ST_Per_5")
+elseif periodo=6 then
+	ST_Per_6 = RS("ST_Per_6")
+end if
+tp = session("tp")
+
+planilha_notas = RS("TP_Nota")
+
+bancoPauta = escolheBancoPauta(planilha_notas,p_subopcao,p_outro)
+caminhoBancoPauta = verificaCaminhoBancoPauta(bancoPauta,p_subopcao,p_outro)
+session("bancoPauta") = bancoPauta
+session("caminhoBancoPauta") = caminhoBancoPauta
+		Set RS8 = Server.CreateObject("ADODB.Recordset")
+		SQL8 = "SELECT * FROM TB_Materia where CO_Materia='"& co_materia &"'"
+		RS8.Open SQL8, CON0
+
+		if RS8.EOF then
+			response.Write(co_materia&" não possui nome cadastrado<br>")				
+		else
+			co_mat_prin= RS8("CO_Materia_Principal")
+		end if
+		
+		if co_mat_prin ="" or isnull(co_mat_prin) then
+			co_mat_prin=co_materia
+		end if
+
+		Set CONPauta = Server.CreateObject("ADODB.Connection") 
+		ABRIRPauta = "DBQ="& caminhoBancoPauta & ";Driver={Microsoft Access Driver (*.mdb)}"
+		CONPauta.Open ABRIRPauta
+		
+		wrkQtdAulasLancadas = 0		
+		Set RSP = Server.CreateObject("ADODB.Recordset")
+		SQL = "Select TB_Pauta_Aula.NU_Pauta, TB_Pauta_Aula.NU_Seq, TB_Pauta_Aula.DT_Aula, TB_Pauta_Aula.NU_Tempo from TB_Pauta INNER JOIN TB_Pauta_Aula on TB_Pauta.NU_Pauta=TB_Pauta_Aula.NU_Pauta WHERE CO_Professor  = "& co_prof &" AND CO_Materia_Principal = '"& co_mat_prin &"' AND CO_Materia = '"& co_materia &"' AND NU_Unidade  = "& unidade &" AND CO_Curso  = '"& curso &"' AND CO_Etapa  = '"& etapa &"' AND CO_Turma  = '"& turma &"' AND NU_Periodo = "& periodo			
+		Set RSP = CONPauta.Execute(SQL)
+					
+		while not RSP.EOF
+
+			wrkQtdAulasLancadas = wrkQtdAulasLancadas+1	
+		RSP.MOVENEXT 
+		Wend	
+
+
+		if wrkQtdAulasLancadas = 0 then
+			response.Redirect("alterar.asp")
+		end if	
+
+%>
+            <%if opt = "ok" then%>
+            <tr>         
+    <td height="10" valign="top"> 
+      <%
+		call mensagens_escolas(ambiente_escola,nivel,622,"ok",0,0,0)		
+%>
+      <div align="center"></div></td>
+            </tr>			
+            <%elseif opt= "err6" then %>
+            <tr> 
+    <td height="10" valign="top"> 
+      <%
+	call mensagens_escolas(ambiente_escola,nivel,1000,"err",num_chamada_erro,errou,0)
+%>
+</td>
+            </tr>
+            <%end if
+%>
+            <% IF trava="s" or (co_usr<>coordenador AND grupo="COO") then%>
+            <tr>     
+    <td height="10" valign="top"> 
+      <%
+	 	 call mensagens_escolas(ambiente_escola,nivel,9701,"inf",0,0,0)	
+	  %>
+</td>
+            </tr>
+		<% ELSEIF (autoriza=5 OR co_usr=coordenador) AND trava<>"s" AND ((periodo = 1 and ST_Per_1="x") OR (periodo = 2 and ST_Per_2="x") OR (periodo = 3 and ST_Per_3="x") OR (periodo = 4 and ST_Per_4="x") OR (periodo = 5 and ST_Per_5="x") OR (periodo = 6 and ST_Per_6="x")) then%>
+            <tr>     
+    <td height="10" valign="top"> 
+      <%
+	 	 call mensagens_escolas(ambiente_escola,nivel,640,"err",0,0,0)		  
+	  %>
+</td>
+            </tr>
+
+
+            <%elseif (periodo = 1 and ST_Per_1="x") OR (periodo = 2 and ST_Per_2="x") OR (periodo = 3 and ST_Per_3="x") OR (periodo = 4 and ST_Per_4="x") OR (periodo = 5 and ST_Per_5="x") OR (periodo = 6 and ST_Per_6="x") then%>
+            <tr> 
+    <td height="10" valign="top"> 
+      <%
+	 	 call mensagens_escolas(ambiente_escola,nivel,624,"inf",0,0,0)			
+%>
+</td>
+            </tr>
+
+            <% end if%>
+<%if opt= "cln" then %>
+            <tr> 
+    <td height="10" valign="top"> 
+      <%
+	call mensagens_escolas(ambiente_escola,nivel,621,"inf",0,0,0)			
+%>
+</td>
+            </tr>
+            <% end if%>						
+	            <tr> 
+    <td height="10" valign="top"> 
+      <%
+	 	 	call mensagens_escolas(ambiente_escola,nivel,645,"inf",0,0,0)			  
+
+%>
+    </td>
+            </tr>			
+            <tr class="tb_tit"> 
+              
+    <td height="15" class="tb_tit">&nbsp;Grade de Aulas</td>
+            </tr>
+            <tr> 
+    <td height="36" valign="top"> 
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="230" class="tb_subtit"><div align="center"><strong>PER&Iacute;ODO </strong></div></td>
+          <td width="145" class="tb_subtit"> 
+            <div align="center"><strong>UNIDADE 
+              </strong></div></td>
+          <td width="145" class="tb_subtit"> 
+            <div align="center"><strong>CURSO 
+              </strong></div></td>
+          <td width="145" class="tb_subtit"> 
+            <div align="center"><strong>ETAPA 
+              </strong></div></td>
+          <td width="145" class="tb_subtit"> 
+            <div align="center"><strong>TURMA 
+              </strong></div></td>
+          <td width="190" class="tb_subtit"> 
+            <div align="center"><strong>DISCIPLINA</strong></div></td>
+        </tr>
+        <tr>
+          <td width="230"><div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif">
+            <%
+		Set RSper = Server.CreateObject("ADODB.Recordset")
+		SQLper = "SELECT * FROM TB_Periodo where NU_Periodo= "&periodo
+		RSper.Open SQLper, CON0
+
+NO_Periodo= RSper("NO_Periodo")
+dataInicio = RSper("DA_Inicio_Periodo")
+dataFim = RSper("DA_Fim_Periodo")
+
+if isnull(dataInicio) or dataInicio="" then
+
+else
+	dataInicio = formata(dataInicio,"DD/MM/YYYY")
+end if
+
+if isnull(dataFim) or dataFim="" then
+
+else
+	dataFim = formata(dataFim,"DD/MM/YYYY")
+end if
+
+response.Write(NO_Periodo)%>
+          </font></div></td>
+          <td width="145"> 
+            <div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <%response.Write(no_unidade)%>
+              </font></div></td>
+          <td width="145"> 
+            <div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <%response.Write(no_curso)%>
+              </font></div></td>
+          <td width="145"> 
+            <div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <%
+response.Write(no_etapa)%>
+              </font></div></td>
+          <td width="145"> 
+            <div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <%
+response.Write(turma)%>
+              </font></div></td>
+          <td width="190"> 
+            <div align="center"> <font size="1" face="Verdana, Arial, Helvetica, sans-serif"> 
+              <%
+
+response.Write(no_materia)%>
+              </font> </div></td>
+        </tr>
+        <tr>
+          <td width="230">&nbsp;</td>
+          <td width="145">&nbsp;</td>
+          <td width="145">&nbsp;</td>
+          <td width="145">&nbsp;</td>
+          <td width="145">&nbsp;</td>
+          <td width="190">&nbsp;</td>
+        </tr>
+        <tr>
+          <td width="230" align="center" class="form_dado_texto">In&iacute;cio: <%response.Write(dataInicio)%> Fim: <%response.Write(dataFim)%></td>
+          <td colspan="4" align="center" class="form_dado_texto">Total de Aulas Lan&ccedil;adas: <%response.Write(wrkQtdAulasLancadas)%></td>
+          <td width="190" align="center" class="form_dado_texto">Legenda: P-Presen&ccedil;a, F-Falta</td>
+        </tr>
+        <tr>
+          <td align="center" class="form_dado_texto">&nbsp;</td>
+          <td>&nbsp;</td>
+          <td class="form_dado_texto">&nbsp;</td>
+          <td>&nbsp;</td>
+          <td align="right">&nbsp;</td>
+          <td align="right" class="form_dado_texto">&nbsp;</td>
+        </tr>
+      </table></td>
+            </tr>
+      <tr> 
+        
+    <td valign="top"> 
+<DIV align="center">
+<iframe src ="iframe.asp" frameborder ="0" width="1000" height="1000" align="middle" scrolling="yes"> </iframe>
+</DIV>  
+<div id="tabela">
+
+
+
+    <span id="versus">X</span>
+
+
+
+    <!-- Primeiro, cria o cabecalho horizontal da tabela -->
+
+    <table id="cabecalhoHorizontal">
+
+        <thead>
+
+            <tr>
+
+               <td>01/03/2013</td><td>02/03/2013</td><td>03/03/2013</td><td>04/03/2013</td><td>05/03/2013</td>
+
+               <td>06/03/2013</td><td>07/03/2013</td><td>08/03/2013</td><td>09/03/2013</td><td>10/03/2013</td>
+
+               <td>11/03/2013</td><td>12/03/2013</td><td>13/03/2013</td><td>14/03/2013</td><td>15/03/2013</td>
+
+               <td>16/03/2013</td><td>17/03/2013</td><td>18/03/2013</td><td>19/03/2013</td><td>20/03/2013</td>
+
+               <td>21/03/2013</td><td>22/03/2013</td><td>23/03/2013</td><td>24/03/2013</td><td>25/03/2013</td>
+
+               <td>26/03/2013</td><td>27/03/2013</td><td>28/03/2013</td><td>29/03/2013</td><td>30/03/2013</td>               
+
+            </tr>
+
+        </thead>
+
+    </table>
+
+
+
+	<!-- Depois, cria o cabecalho vertical da tabela -->
+
+    <table id="cabecalhoVertical">
+
+        <thead>
+
+           <tr><td>Ana</td></tr>
+
+           <tr><td>Aparecida</td></tr> 
+
+           <tr><td>Breno</td></tr>    
+
+           <tr><td>Carlos</td></tr>
+
+           <tr><td>Celso</td></tr>
+
+           <tr><td>Danila</td></tr>
+
+           <tr><td>Everton</td></tr>
+
+           <tr><td>Fabiana</td></tr>
+
+           <tr><td>Fernanda</td></tr>
+
+           <tr><td>Filipe</td></tr>
+
+           <tr><td>Gilberto</td></tr>
+
+           <tr><td>Hilda</td></tr>
+
+           <tr><td>Irineu</td></tr>
+
+           <tr><td>Jânio</td></tr>
+
+           <tr><td>Juliana</td></tr>
+
+           <tr><td>Magno</td></tr>
+
+           <tr><td>Marcelo</td></tr>
+
+           <tr><td>Mariana</td></tr>
+
+           <tr><td>Miguel</td></tr>
+
+           <tr><td>Olga</td></tr>
+
+           <tr><td>Patrícia</td></tr>
+
+           <tr><td>Pedro G.</td></tr>
+
+           <tr><td>Pedro M.</td></tr>
+
+           <tr><td>Sabrina</td></tr>
+
+           <tr><td>Waléria</td></tr>
+
+        </thead>
+
+    </table>    
+
+    
+
+    <!-- Dados da tabela -->
+
+    <table id="dados">        
+
+        <tbody>  
+
+        
+
+        <!-- Ana -->
+
+        <tr>
+
+        	<td> L </td><td> F </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>
+
+        </tr>
+
+        
+
+        <!-- Aparecida -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Breno -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Carlos -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Celso -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Danila -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Everton -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Fabiana -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Fernanda -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Filipe -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Gilberto -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Hilda -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Irineu -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Jânio -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Juliana -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Magno -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Marcelo -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Mariana -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Miguel -->
+
+        
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Olga -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Patrícia -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Pedro G. -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Pedro M. -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Sabrina -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+        
+
+        <!-- Waléria -->
+
+        <tr>
+
+        	<td> L </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> - </td><td> - </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> P </td><td> - </td><td> - </td><td> P </td>
+
+            <td> P </td><td> P </td><td> P </td><td> P </td><td> - </td>
+
+            <td> - </td><td> P </td><td> P </td><td> P </td><td> P </td>
+
+            <td> P </td><td> - </td><td> - </td><td> P </td><td> P </td>        
+
+        </tr>
+
+
+
+        </tbody>
+
+    </table>
+
+
+
+</div>
+
+
+    </td>
+      </tr>
+      <%	
+Set RS = Nothing
+Set RS2 = Nothing
+Set RS3 = Nothing
+
+%>
+      <tr>      
+    <td height="40" valign="top"> <img src="../../../../img/rodape.jpg" width="1000" height="40"></td>
+      </tr>
+    </table>
+</body>
+</html>
+<%If Err.number<>0 then
+errnumb = Err.number
+errdesc = Err.Description
+lsPath = Request.ServerVariables("SCRIPT_NAME")
+arPath = Split(lsPath, "/")
+GetFileName =arPath(UBound(arPath,1))
+passos = 0
+for way=0 to UBound(arPath,1)
+passos=passos+1
+next
+seleciona1=passos-2
+pasta=arPath(seleciona1)
+errfile= pasta&"/"&GetFileName
+session("errnumb")=errnumb
+session("errdesc")=errdesc
+session("errfile") = errfile
+response.redirect("../../../../inc/erro.asp")
+end if
+%>

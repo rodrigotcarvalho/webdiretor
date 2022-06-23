@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<script language="javascript"><!--
+function doprint() {
+//save existing user\´s info
+var h = factory.printing.header;
+var f = factory.printing.footer;
+//hide the button
+document.all("printbtn").style.visibility = "hidden";
+//set header and footer to blank
+factory.printing.header = "";
+factory.printing.footer = "";
+//print page without prompt
+factory.doprint(false);
+//restore user\´s info
+factory.printing.header = h;
+factory.printing.footer = f;
+//show the print button
+document.all("printbtn").style.visibility = "visible";
+}
+//--></script>
+<body>
+<br><br><br>
+<object id=factory style="display:none"
+classid="clsid:1663ed61-23eb-11d2-b92f-008048fdd814" viewastext codebase="scriptx.cab#version=5,0,4,185">
+</object>
+<br><br>
+<div id="printbtn"><input name="idprint" type="button" value="imprimir" onclick="doprint()"></div>
+teste de impressão...
+teste de impressão...
+teste de impressão...
+teste de impressão...
+teste de impressão...
+</body> 
+
+
+
+
+</head>
+
+<body>
+</body>
+</html>

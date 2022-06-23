@@ -1,0 +1,102 @@
+.borda {
+	border: 1px solid #CC9900;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #000000;
+}
+
+.textInput,textarea {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  color: #000000;
+  background-color: #FFFFFF;
+  border: 1px solid #CC9900;
+}
+
+.timeClass {
+  font-family:verdana,helvetica,sans-serif;
+  font-weight:normal;
+  font-size:9pt;
+  color: #0000CC;
+}
+
+
+.inputHighlighted {  
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  background-color: #FFF0E1;
+  color: #000000;
+  border: 1px solid #CC9900;
+  border-top: thin 1px solid #CC9900;
+  border-right: thin 1px solid #CC9900;
+  border-bottom: thin inset;
+  border-left: thin inset;
+}
+
+.linhaBaixo {
+	border-bottom-width: 0.5pt;
+	border-bottom-style: solid;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 6px;
+	border-bottom-color: #000000;
+
+
+}
+.linhaTopoL {
+
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-top-width: 0.5pt;
+	border-top-color: #000000;
+	border-right-color: #000000;
+	border-bottom-color: #000000;
+	border-left-color: #000000;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	text-align: left;
+}
+.linhaTopoR {
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-top-width: 0.5pt;
+	border-top-color: #000000;
+	border-right-color: #000000;
+	border-bottom-color: #000000;
+	border-left-color: #000000;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	text-align: right;
+	left: auto;
+	right: 0px;
+
+}
+.tabela {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 6pt;
+	border: 0.5pt solid #000000;
+
+}
+.tabelaTit {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 6pt;
+	border: 0.5pt solid #000000;
+	font-weight: bold;
+	text-align: center;
+
+
+}
+.tabela2 {
+
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 6pt;
+	border: 0.5pt solid #000000;
+}
+.imprime {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 6pt;
+	font-weight: bold;
+}

@@ -2,6 +2,7 @@
 <!--#include file="funcoes2.asp"-->
 <!--#include file="funcoes6.asp"-->
 <!--#include file="bd_alunos.asp"-->
+<!--#include file="bd_parametros.asp"-->
 <%
 Function GeraBoletos(nivel, dados, cod_matric, mes_solici, ucet, de, ate, tipo, restricao)
 
@@ -440,6 +441,8 @@ cod_cons = vetorMatriculas(l)
 			else
 				vencimento=RS4("DA_Vencimento")
 				nu_cota=RS4("NU_Cota")
+				da_realizado=RS4("DA_Realizado")
+
 				'response.Write(SQL4&", "&vencimento&", "&nu_cota&"<BR>")
 				if tipo<>"EBP" or (tipo="EBP" and opcao="ucet") then 
 					vetor_vencimento = split(vencimento, "/")
@@ -725,7 +728,18 @@ cod_cons = vetorMatriculas(l)
 				
 				
 				
-				
+					valor_txt_multa = ""
+					val_txt_total = va_inicial				
+
+				    if isnull(da_realizado)then
+						val_multa = CalculaMulta(da_vencimento, data_calc, va_inicial)
+						val_mora = CalculaMora(da_vencimento, data_calc, va_inicial)							
+						if val_multa>0 and val_mora>0  then
+							valor_txt_multa = val_multa+val_mora
+							val_txt_total = va_inicial+valor_txt_multa
+						end if	
+					  
+				  end if				
 				
 				
 				
@@ -865,10 +879,15 @@ cod_cons = vetorMatriculas(l)
 						Set SmallTable7 = Doc.CreateTable("Height=17; Width="&width_stb_7&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 						SmallTable7.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(-) Outras Dedu&ccedil;&otilde;es</font>", "x=1; y=8, size=5; html=true", Font
 						SmallTable7.At(2, 1).AddText " ", " alignment=right; size=7;", Font		
+
+						exibe_multa=""
+						if isnumeric(valor_txt_multa) then
+							exibe_multa = formatcurrency(valor_txt_multa)
+						end if
 						
 						Set SmallTable8 = Doc.CreateTable("Height=17; Width="&width_stb_8&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 						SmallTable8.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(+) Mora / Multa</font>", "x=1; y=8, size=5; html=true", Font
-						SmallTable8.At(2, 1).AddText " ", " alignment=right; size=7;", Font			
+						SmallTable8.At(2, 1).AddText exibe_multa, " alignment=right; size=7;", Font			
 			
 						Set SmallTable9 = Doc.CreateTable("Height=17; Width="&width_stb_9&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 						SmallTable9.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(+) Outros Acr&eacute;scimos</font>", "x=1; y=8, size=5; html=true", Font
@@ -876,7 +895,7 @@ cod_cons = vetorMatriculas(l)
 			
 						Set SmallTable10 = Doc.CreateTable("Height=17; Width="&width_stb_10&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 						SmallTable10.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(=) Valor Cobrado</font>", "x=1; y=8, size=5; html=true", Font
-						SmallTable10.At(2, 1).AddText " ", " alignment=right; size=7;", Font	
+						SmallTable10.At(2, 1).AddText formatcurrency(val_txt_total), " alignment=right; size=7;", Font	
 						
 						Set SmallTable11 = Doc.CreateTable("Height=17; Width="&width_stb_11&"; cols=4; rows=1; border=0; cellborder=0; cellspacing=0;")
 						SmallTable11.Rows(1).Cells(1).Width = 70

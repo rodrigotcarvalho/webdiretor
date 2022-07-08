@@ -739,7 +739,8 @@ while not RS4.EOF
 	realizado=RS4("VA_Realizado") 
 	da_realizado=RS4("DA_Realizado")
 	nome_lanc=RS4("NO_Lancamento")
-
+'					teste = RS4("Mes")
+'response.write(teste&"-"&da_vencimento&"-"&da_realizado&"<BR>")
 	if da_vencimento_check<>da_vencimento then
 		check=check+1
 		da_vencimento_check = da_vencimento	
@@ -791,7 +792,7 @@ while not RS4.EOF
 	if isnull(da_realizado) then
 		 d_diff=DateDiff("d",data_compara,da_vencimento)
 		 if nome_lanc="Mensalidade" then
-		 situacao="<a href=""../../../../relatorios/gera_boleto.asp?opt="&p_vencimento&"&c="&cod&""">Parcela Não Paga</a>"	  
+		 situacao="<a href=""../../../../relatorios/gera_boleto.asp?opt="&p_vencimento&"&c="&cod&"&r=M"">Parcela Não Paga</a>"	  
 		 'situacao="<a href=""#"" onclick = ""MM_openBrWindow('boleto_itau.asp?c="&cod&"&opt="&p_vencimento&"','','status=yes,scrollbars=yes,resizable=yes,width=800,height=500')"">Parcela Não Paga</a>"
 		else
 		  situacao="Parcela Não Paga"
@@ -826,7 +827,7 @@ while not RS4.EOF
 	if isnull(da_realizado) and d_diff<0 then
 	  cor = "tb_fundo_linha_atraso" 
 	  if nome_lanc="Mensalidade" then
-	      situacao="<a href=""../../../../relatorios/gera_boleto.asp?opt="&p_vencimento&"&c="&cod&""">Parcela Vencida</a>"	  
+	      situacao="<a href=""../../../../relatorios/gera_boleto.asp?opt="&p_vencimento&"&c="&cod&"&r=M"">Parcela Vencida</a>"	  
 		  'situacao="<a href=""#"" onclick = ""MM_openBrWindow('boleto_itau.asp?c="&cod&"&opt="&p_vencimento&"','','status=yes,scrollbars=yes,resizable=yes,width=800,height=500')"">Parcela Vencida</a>"
 	  else
 		  situacao="Parcela Vencida"

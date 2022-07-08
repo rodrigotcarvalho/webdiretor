@@ -427,7 +427,7 @@ end select
 	<tr>
 		<td width="40%">&nbsp;</td>		
 		<td width="4%" align="center">&bull;</td>		
-		<td width="23%" class="style1"><!--<a href="#" class="menu_sublista" onClick="MM_openBrWindow('boleto_bradesco.asp?c=<%=cod%>&amp;vc=<%=mes%>','','status=yes,scrollbars=yes,resizable=yes,width=800,height=500')"> <%response.Write(mes_nome)%></a>--><a href="../../relatorios/gera_boleto.asp?c=<%=cod%>&amp;opt=<%=mes%>" class="menu_sublista"> <%response.Write(mes_nome)%></a></td>
+		<td width="23%" class="style1"><!--<a href="#" class="menu_sublista" onClick="MM_openBrWindow('boleto_bradesco.asp?c=<%=cod%>&amp;vc=<%=mes%>','','status=yes,scrollbars=yes,resizable=yes,width=800,height=500')"> <%response.Write(mes_nome)%></a>--><a href="../../relatorios/gera_boleto.asp?c=<%=cod%>&amp;opt=<%=mes%>&amp;r=M" class="menu_sublista"> <%response.Write(mes_nome)%></a></td>
 		<td width="33%" class="style1">&nbsp;</td>	
         	</tr>
 

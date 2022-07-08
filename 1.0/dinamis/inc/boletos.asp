@@ -620,6 +620,14 @@ cod_cons = vetorMatriculas(l)
 					
 					Set RS4 = Server.CreateObject("ADODB.Recordset")
 					SQL4= "SELECT * FROM TB_Posicao WHERE CO_Matricula_Escola ="& cod_cons &" AND Mes = "&mes_vencimento
+					if restricao<>"" or not isnull(restricao) then
+						if restricao = "S" then
+							restricao ="NO_Lancamento<>'Mensalidade'"
+						elseif restricao = "M" then
+							restricao ="NO_Lancamento='Mensalidade'"			
+						end if	
+						SQL4= SQL4&" AND "&restricao 
+					end if
 					RS4.Open SQL4, CON4
 					
 					
@@ -630,7 +638,8 @@ cod_cons = vetorMatriculas(l)
 					
 					valor_txt_multa = ""
 					val_txt_total = va_inicial				
-					
+					'response.write("da_realizado "&da_realizado)
+	'response.end()
 				    if isnull(da_realizado)then
 						val_multa = CalculaMulta(da_vencimento, data_calc, va_inicial)
 						val_mora = CalculaMora(da_vencimento, data_calc, va_inicial)							

@@ -1,6 +1,7 @@
 <!--#include file="caminhos.asp"-->
 <!--#include file="funcoes2.asp"-->
 <!--#include file="funcoes6.asp"-->
+<!--#include file="bd_parametros.asp"-->
 <%
 
 Set CONBL = Server.CreateObject("ADODB.Connection") 
@@ -301,6 +302,7 @@ min = DatePart("n", now)
 			else
 				vencimento=RS4("DA_Vencimento")
 				nu_cota=RS4("NU_Cota")
+				da_realizado=RS4("DA_Realizado")
 
 				vetor_vencimento = split(vencimento, "/")
 				vetor_vencimento(0)=vetor_vencimento(0)*1
@@ -503,10 +505,18 @@ min = DatePart("n", now)
 
 			Page.Canvas.DrawTable Table, "x="&margem_x&", y="&y_table&"" 				
 			
-			
-			
-			
-			
+			valor_txt_multa = ""
+			val_txt_total = va_inicial				
+		
+		   if isnull(da_realizado)then
+				val_multa = CalculaMulta(da_vencimento, data_calc, va_inicial)
+				val_mora = CalculaMora(da_vencimento, data_calc, va_inicial)							
+				if val_multa>0 and val_mora>0  then
+					valor_txt_multa = val_multa+val_mora
+					val_txt_total = va_inicial+valor_txt_multa
+				end if	
+					  
+			end if		
 			
 			
 			
@@ -639,10 +649,14 @@ min = DatePart("n", now)
 				Set SmallTable7 = Doc.CreateTable("Height=17; Width="&width_stb_7&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 				SmallTable7.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(-) Outras Dedu&ccedil;&otilde;es</font>", "x=1; y=8, size=5; html=true", Font
 				SmallTable7.At(2, 1).AddText " ", " alignment=right; size=7;", Font		
+				exibe_multa=""
+				if isnumeric(valor_txt_multa) then
+					exibe_multa = formatcurrency(valor_txt_multa)
+				end if	
 				
 				Set SmallTable8 = Doc.CreateTable("Height=17; Width="&width_stb_8&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 				SmallTable8.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(+) Mora / Multa</font>", "x=1; y=8, size=5; html=true", Font
-				SmallTable8.At(2, 1).AddText " ", " alignment=right; size=7;", Font			
+				SmallTable8.At(2, 1).AddText exibe_multa, " alignment=right; size=7;", Font			
 	
 				Set SmallTable9 = Doc.CreateTable("Height=17; Width="&width_stb_9&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 				SmallTable9.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(+) Outros Acr&eacute;scimos</font>", "x=1; y=8, size=5; html=true", Font
@@ -650,7 +664,7 @@ min = DatePart("n", now)
 	
 				Set SmallTable10 = Doc.CreateTable("Height=17; Width="&width_stb_10&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 				SmallTable10.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">(=) Valor Cobrado</font>", "x=1; y=8, size=5; html=true", Font
-				SmallTable10.At(2, 1).AddText " ", " alignment=right; size=7;", Font	
+				SmallTable10.At(2, 1).AddText formatcurrency(val_txt_total), " alignment=right; size=7;", Font	
 				
 				Set SmallTable11 = Doc.CreateTable("Height=17; Width="&width_stb_11&"; cols=1; rows=2; border=0; cellborder=0; cellspacing=0;")
 				SmallTable11.At(1, 1).Canvas.DrawText "<font style=""font-size:5pt;"">Benefici&aacute;rio</font>", "x=1; y=8, size=5; html=true", Font

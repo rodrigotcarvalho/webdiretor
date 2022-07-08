@@ -106,7 +106,7 @@ elseif tipo="rematricula" then
 	RSano.Open SQLano, conexao
 
     vencimento=RSano("DT_Bloqueto_Rematricula")
-    'teste  vencimento = "20/10/2015"
+    vencimento = "29/10/2021"
 	nu_cota=1
 
 
@@ -362,7 +362,7 @@ cod_cons = vetorMatriculas(l)
 			Set RS1 = Server.CreateObject("ADODB.Recordset")
 			SQL1 = "SELECT * FROM TB_Bloqueto WHERE DA_Vencimento>=#"& vencimento_inicial &"# and DA_Vencimento<=#"& vencimento_final &"#   AND CO_Matricula_Escola ="& cod_cons
 			RS1.Open SQL1, CONBL		
-	
+        'response.Write(SQL1&"<BR>")	
 		else
 			wrk_mes=vetor_meses(n)*1
 			Set RS4 = Server.CreateObject("ADODB.Recordset")
@@ -421,7 +421,7 @@ cod_cons = vetorMatriculas(l)
 			else
 				SQL4= SQL4&"AND NO_Lancamento='Mensalidade'"
 			end if	
-        response.Write(SQL4&"<BR>")	
+        'response.Write(SQL4&"<BR>")	
 	
 			RS4.Open SQL4, CON4	
 
@@ -467,22 +467,24 @@ cod_cons = vetorMatriculas(l)
 					vencimento_final = mes_vencimento&"/"&dia_vencimento&"/"&ano_vencimento 
 				end if	
 			end if
-        response.Write(wrk_gera_boleto&"<BR>")		
+        'response.Write(wrk_gera_boleto&"<BR>")		
 			if wrk_gera_boleto = "S" then
 			
 				Set RS1 = Server.CreateObject("ADODB.Recordset")
 				SQL1 = "SELECT * FROM TB_Bloqueto WHERE DA_Vencimento>=#"& vencimento_inicial &"# and DA_Vencimento<=#"& vencimento_final &"#   AND CO_Matricula_Escola ="& cod_cons	
-        response.Write(SQL1&"<BR>")							
+        'response.Write(SQL1&"<BR>")							
 				RS1.Open SQL1, CONBL	
-        response.Write(RS1.EOF&"<BR>")						
+        'response.Write(RS1.EOF&"<BR>")						
 				'response.end()	
 			end if
 		end if	
-		starttimeBoleto = timer()				
+		starttimeBoleto = timer()	
+        response.Write(wrk_gera_boleto&"<BR>")
+
 		if wrk_gera_boleto = "S" then		
 	
-				'response.Write(SQL1)			
-	
+				'response.Write(vencimento_inicial )			
+	'response.end()
 				
 				if RS1.EOF then		
 					vetor_venc = split(vencimento_inicial,"/")
@@ -618,6 +620,14 @@ cod_cons = vetorMatriculas(l)
 					
 					Set RS4 = Server.CreateObject("ADODB.Recordset")
 					SQL4= "SELECT * FROM TB_Posicao WHERE CO_Matricula_Escola ="& cod_cons &" AND Mes = "&mes_vencimento
+					if restricao<>"" or not isnull(restricao) then
+						if restricao = "S" then
+							restricao ="NO_Lancamento<>'Mensalidade'"
+						elseif restricao = "M" then
+							restricao ="NO_Lancamento='Mensalidade'"			
+						end if	
+						SQL4= SQL4&" AND "&restricao 
+					end if
 					RS4.Open SQL4, CON4
 					
 					
@@ -628,7 +638,8 @@ cod_cons = vetorMatriculas(l)
 					
 					valor_txt_multa = ""
 					val_txt_total = va_inicial				
-					
+					'response.write("da_realizado "&da_realizado)
+	'response.end()
 				    if isnull(da_realizado)then
 						val_multa = CalculaMulta(da_vencimento, data_calc, va_inicial)
 						val_mora = CalculaMora(da_vencimento, data_calc, va_inicial)							

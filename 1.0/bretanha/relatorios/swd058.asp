@@ -562,6 +562,7 @@ Param_Logo_Gde("ScaleY") = 0.6
 				resultado_final_aluno=apura_resultado_aluno(curso, co_etapa, resultados_apurados(a))							
 'response.Write(dados_alunos(0)&"-"&resultado_final_aluno&"=<BR><BR>")
 				resultados_alunos = split(resultados_apurados(a), "#$#" )	
+<<<<<<< HEAD
 				linha=linha+1
 				Set Row = Notas_Tit.Rows.Add(15) ' row height						
 				'Notas_Tit(linha, 1).AddText "<div align=""center"">"&dados_alunos(0)&"</div>", param_materias
@@ -657,6 +658,105 @@ Param_Logo_Gde("ScaleY") = 0.6
 					resultado_final_aluno="Can"
 				end if
 				Notas_Tit(linha, 20).AddText "<div align=""center"">"&resultado_final_aluno&"</DIV>", param_materias															
+=======
+				if resultado_final_aluno = "APR" or resultado_final_aluno = "Apr" then
+					linha=linha+1
+					Set Row = Notas_Tit.Rows.Add(15) ' row height						
+					'Notas_Tit(linha, 1).AddText "<div align=""center"">"&dados_alunos(0)&"</div>", param_materias
+					 Notas_Tit(linha, 1).AddText "<div align=""center"">"&dados_alunos(4)&"</div>", param_materias				
+									
+					param_materias.Add "indentx=5"	
+					Notas_Tit(linha, 2).AddText dados_alunos(2), param_materias
+					coluna=2
+					param_materias.Add "indentx=0"
+					calcula_frequencia="s"
+					for n=0 to ubound(co_materia_exibe)	
+						coluna=coluna+1	
+						resultados_materia = split(resultados_alunos(n), "#!#" )
+					
+						if resultados_materia(0)="&nbsp;" or resultados_materia(0)="" or isnull(resultados_materia(0)) then
+							calcula_frequencia="n"				
+						end if	
+					
+						media=resultados_materia(0)
+	'					if curso=1 and co_etapa<6 and (co_materia_verifica(n)="ARTC" or co_materia_verifica(n)="EART" or co_materia_verifica(n)="EFIS" or co_materia_verifica(n)="INGL") then									
+	'						teste_media = isnumeric(media)							
+	'						if teste_media=TRUE then							
+	'							if media > 90 then
+	'							conceito="E"
+	'							elseif (media > 70) and (media <= 90) then
+	'							conceito="MB"
+	'							elseif (media > 60) and (media <= 70) then							
+	'							conceito="B"
+	'							elseif (media > 49) and (media <= 60) then
+	'							conceito="R"
+	'							else							
+	'							conceito="I"
+	'							end if	
+	'						end if	
+	'					else
+							conceito=media				
+	'					end if						
+					
+						Notas_Tit(linha, coluna).AddText "<div align=""center"">"&conceito&"</DIV>", param_materias	
+						'coluna=coluna+1	
+						'Notas_Tit(linha, coluna).AddText "<div align=""center"">"&resultados_materia(1)&"</DIV>", param_materias	
+					next	
+					soma_faltas=0
+					if calcula_frequencia="s" then
+						co_materia= split(vtr_materia,"#!#")	
+						For cm=0 to ubound(co_materia)
+							Set RS = Server.CreateObject("ADODB.Recordset")
+							SQL = "SELECT * FROM TB_Periodo order by NU_Periodo"
+							RS.Open SQL, CON0
+							conta=0	
+							while not RS.EOF
+								periodo_cons=RS("NU_Periodo")	
+								if periodo_cons=1 then
+									per_faltas="f1"			
+								elseif periodo_cons=2 then
+									per_faltas="f2"				
+								elseif periodo_cons=3 then
+									per_faltas="f3"				
+								elseif periodo_cons=4 then
+									per_faltas="f4"			
+								end if
+								if periodo_cons<5 then
+									faltas=Calcula_Media_T_F_F_N(unidade, curso, co_etapa, turma, dados_alunos(0), co_materia(cm), caminho_nota, tb_nota, per_faltas)				
+								'	response.Write("faltas "&faltas&"<BR>")
+									if faltas="" or isnull(faltas) or faltas="&nbsp;" then				
+										soma_faltas=soma_faltas	
+									else	
+										soma_faltas=soma_faltas+faltas	
+									end if	
+								end if
+							RS.Movenext
+							Wend											
+						next			
+		
+						
+						soma_faltas=soma_faltas*1
+						'dias_de_aula_no_ano=200			
+						frequencia=((dias_de_aula_no_ano-soma_faltas)/dias_de_aula_no_ano)*100
+						if frequencia<100 then
+							frequencia=arredonda(frequencia,"mat_dez",1,0)	
+							if frequencia=100 then 
+								frequencia=100
+							end if
+						end if	
+	'					response.Write(frequencia&"="&dias_de_aula_no_ano&"-"&soma_faltas&"<BR>")
+	'					response.End()
+					else
+						frequencia=""
+					end if				
+								
+					Notas_Tit(linha, 19).AddText "<div align=""center"">"&frequencia&"</DIV>", param_materias	
+					if dados_alunos(3)="E" then
+						resultado_final_aluno="Can"
+					end if
+					Notas_Tit(linha, 20).AddText "<div align=""center"">"&resultado_final_aluno&"</DIV>", param_materias	
+				END IF
+>>>>>>> Bretanha.ev.relatorio.Concluientes
 			next
 
 			limite=0

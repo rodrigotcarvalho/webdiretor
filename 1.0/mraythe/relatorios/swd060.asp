@@ -371,7 +371,7 @@ for i=0 to ubound(conjunto_dados)
 							SET Page = Page.NextPage
 						Aluno = Right( Aluno, Len(Aluno) - CharsPrinted)
 					Loop 
-					Table(linha, 2).AddText "<div align=""center""><BR>&nbsp;<BR>&nbsp;<BR>&nbsp;<BR>&nbsp;<BR>&nbsp;<BR>Associação Franciscana Nossa Senhora do Amparo<BR>&nbsp;<br>Rua Haddock Lobo, 233 – Tijuca – RJ<BR>&nbsp;<br>CEP.: 20.260-141<BR>&nbsp;<br>Telefone: 2264-5474</div>", "size=9;html=true", Font
+					Table(linha, 2).AddText "<div align=""center"">Associação Franciscana Nossa Senhora do Amparo<BR>&nbsp;<br>Rua Haddock Lobo, 233 – Tijuca – RJ<BR>&nbsp;<br>CEP.: 20.260-141<BR>&nbsp;<br>Telefone: 2264-5474</div>", "size=9;html=true;indenty=40", Font
 			
 					SET Param_Relatorio = Pdf.CreateParam("x="&margem&";y="&margem&"; height=50; width="&area_utilizavel&"; alignment=left; size=8; color=#000000")
 				

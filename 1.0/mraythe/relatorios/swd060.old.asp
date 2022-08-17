@@ -225,7 +225,7 @@ for i=0 to ubound(conjunto_dados)
 	
 	Set RSA = Server.CreateObject("ADODB.Recordset")
 	'CONEXAOA = "Select TB_Matriculas.CO_Matricula, TB_Matriculas.NU_Chamada, TB_Matriculas.CO_Situacao, TB_Alunos.NO_Aluno from TB_Matriculas, TB_Alunos WHERE TB_Matriculas.NU_Ano="& ano_letivo &" AND TB_Matriculas.CO_Situacao='C' AND TB_Matriculas.CO_Matricula=TB_Alunos.CO_Matricula AND TB_Matriculas.NU_Unidade = "& unidade&" AND TB_Matriculas.CO_Curso = '"& curso &"' AND TB_Matriculas.CO_Etapa = '"& co_etapa &"' AND TB_Matriculas.CO_Turma = '"& turma &"' order by TB_Alunos.NO_Aluno"
-	CONEXAOA = "Select TB_Matriculas.CO_Matricula, TB_Matriculas.NU_Chamada, TB_Matriculas.CO_Situacao, TB_Alunos.NO_Aluno, TB_Alunos.IN_Sexo from TB_Matriculas, TB_Alunos WHERE TB_Matriculas.NU_Ano="& ano_letivo &" AND TB_Matriculas.CO_Matricula=TB_Alunos.CO_Matricula AND TB_Matriculas.NU_Unidade = "& unidade&" AND TB_Matriculas.CO_Curso = '"& curso &"' AND TB_Matriculas.CO_Etapa = '"& co_etapa &"' AND TB_Matriculas.CO_Turma = '"& turma &"' order by TB_Alunos.NO_Aluno"
+	CONEXAOA = "Select TB_Matriculas.CO_Matricula, TB_Matriculas.NU_Chamada, TB_Matriculas.CO_Situacao, TB_Alunos.NO_Aluno from TB_Matriculas, TB_Alunos WHERE TB_Matriculas.NU_Ano="& ano_letivo &" AND TB_Matriculas.CO_Matricula=TB_Alunos.CO_Matricula AND TB_Matriculas.NU_Unidade = "& unidade&" AND TB_Matriculas.CO_Curso = '"& curso &"' AND TB_Matriculas.CO_Etapa = '"& co_etapa &"' AND TB_Matriculas.CO_Turma = '"& turma &"' order by TB_Alunos.NO_Aluno"
 	
 	Set RSA = CON1.Execute(CONEXAOA)
 
@@ -235,21 +235,20 @@ for i=0 to ubound(conjunto_dados)
 		nome_aluno= RSA("NO_Aluno")			
 		nu_chamada = RSA("NU_Chamada")
 		situacao = RSA("CO_Situacao")	
-		sexo = RSA("IN_Sexo")	
 		
 		nome_aluno=replace_latin_char(nome_aluno,"html")	
 		nu_chamada_check=nu_chamada_check*1
 		nu_chamada=nu_chamada*1
 		if nu_chamada_check = 1 and nu_chamada=nu_chamada_check then
 			gera_pdf="sim"
-			vetor_matriculas=nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao&"#!#"&sexo
+			vetor_matriculas=nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao
 		elseif nu_chamada_check = 1 then
 			while nu_chamada_check < nu_chamada
 				nu_chamada_check=nu_chamada_check+1
 			wend 
-			vetor_matriculas=nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao&"#!#"&sexo
+			vetor_matriculas=nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao
 		else
-			vetor_matriculas=vetor_matriculas&"#$#"&nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao&"#!#"&sexo
+			vetor_matriculas=vetor_matriculas&"#$#"&nu_matricula&"#!#"&nu_chamada&"#!#"&nome_aluno&"#!#"&situacao
 		end if
 	nu_chamada_check=nu_chamada_check+1		
 	RSA.MoveNext
@@ -335,9 +334,9 @@ for i=0 to ubound(conjunto_dados)
 						y_escola = y_primeira_tabela-15
 					END IF
 
-					SET Param_Escola = Pdf.CreateParam("x="&margem&";y="&y_escola&"; height="&altura_logo&"; width="&largura_celula&"; alignment=left; size=9; html=true; color=#000000")
+					SET Param_Escola = Pdf.CreateParam("x="&margem&";y="&y_escola&"; height="&altura_logo&"; width="&largura_celula&"; alignment=left; size=5.5; html=true; color=#000000")
 
-					Escola = "<CENTER><font style=""font-size:12pt;""><b>Col&eacute;gio Maria Raythe</b></font><br><i>Associa&ccedil;&atilde;o Franciscana<br>Nossa Senhora do Amparo</i></CENTER>"
+					Escola = "<CENTER><font style=""font-size:9pt;""><b>Col&eacute;gio<br>Maria Raythe</b></font><br><i>Associa&ccedil;&atilde;o Franciscana<br>Nossa Senhora do Amparo</i></CENTER>"
 					Do While Len(Escola) > 0
 						CharsPrinted = Page.Canvas.DrawText(Escola, Param_Escola, Font )
 				 
@@ -346,33 +345,27 @@ for i=0 to ubound(conjunto_dados)
 						Escola = Right( Escola, Len(Escola) - CharsPrinted)
 					Loop 
 
-					Set param_table2 = Pdf.CreateParam("width=50; height=20; rows=1; cols=1; border=0; cellborder=0; cellspacing=0;")
+					Set param_table2 = Pdf.CreateParam("width=50; height=15; rows=1; cols=1; border=0.5; cellborder=0.5; cellspacing=0;")
 					Set Table2 = Doc.CreateTable(param_table2)
 					Table2.Font = Font
-					y_segunda_tabela=y_escola-altura_logo+30
+					y_segunda_tabela=y_escola-altura_logo+25
 					x_segunda_tabela=CInt(area_utilizavel/4)
 					
-					Table2(1, 1).AddText "<CENTER><b>"&Session("ano_letivo")&"</b></CENTER>" , "size=14; html=true; indentx=0; indenty=0", Font
+					Table2(1, 1).AddText "<CENTER>"&Session("ano_letivo")&"</CENTER>" , "size=9; html=true; indentx=0; indenty=0", Font
 					Page.Canvas.DrawTable Table2, "x="&x_segunda_tabela&", y="&y_segunda_tabela&"" 
 
-					Set param_table3 = Pdf.CreateParam("width=200; height=20; rows=1; cols=1; border=0.5; cellborder=0.5; cellspacing=0;")
+					Set param_table3 = Pdf.CreateParam("width=200; height=15; rows=1; cols=1; border=0.5; cellborder=0.5; cellspacing=0;")
 					Set Table3 = Doc.CreateTable(param_table3)
 					Table3.Font = Font
-					y_terceira_tabela=y_segunda_tabela-30
+					y_terceira_tabela=y_segunda_tabela-25
 					x_terceira_tabela=CInt(area_utilizavel/8)
 					
-					Table3(1, 1).AddText "<CENTER><b>AUTORIZA&Ccedil;&Atilde;O DE SA&Iacute;DA SOZINHO</b></CENTER>" , "size=11; html=true; indentx=0; indenty=2", Font
+					Table3(1, 1).AddText "<CENTER>AUTORIZA&Ccedil;&Atilde;O DE SA&Iacute;DA SOZINHO</CENTER>" , "size=9; html=true; indentx=0; indenty=0", Font
 					Page.Canvas.DrawTable Table3, "x="&x_terceira_tabela&", y="&y_terceira_tabela&"" 
 
-					if dados_alunos(4) = "F" then
-					designado = "Aluna"
-					else
-						designado = "Aluno"
-					end if
-
-					y_aluno = y_terceira_tabela-25
-					SET Param_Aluno = Pdf.CreateParam("x="&margem&";y="&y_aluno&"; height="&altura_logo&"; width="&largura_celula&"; alignment=left; size=11; html=true; color=#000000")
-					Aluno = "<b><CENTER>"&designado&":"&dados_alunos(2)&"<BR>Turma:"&turma&"</CENTER></b>"
+					y_aluno = y_terceira_tabela-30
+					SET Param_Aluno = Pdf.CreateParam("x="&margem&";y="&y_aluno&"; height="&altura_logo&"; width="&largura_celula&"; alignment=left; size=9; html=true; color=#000000")
+					Aluno = "<b><CENTER>Aluno:"&dados_alunos(2)&"<BR>&nbsp;<BR>Turma:"&turma&"</CENTER></b>"
 					Do While Len(Aluno) > 0
 						CharsPrinted = Page.Canvas.DrawText(Aluno, Param_Aluno, Font )
 				 
@@ -421,16 +414,21 @@ for i=0 to ubound(conjunto_dados)
 						qtd_fotos=0
 						linha=1
 						pagina=pagina+1
-						y_primeira_tabela=Page.Height-margem+linha_nula
 						y_foto_logo = y_primeira_tabela+75
 						Set param_table1 = Pdf.CreateParam("width="&area_utilizavel&"; height="&celula&"; rows=1; cols=2; border=1; cellborder=1; cellspacing=0;")						
 						Set Table = Doc.CreateTable(param_table1)
 						Table.Font = Font
-					else						
-						Page.Canvas.DrawTable Table, "x="&x_primeira_tabela&", y="&y_primeira_tabela&""
-						y_primeira_tabela=y_primeira_tabela-espacamento
+					else
+						if a <> ubound(alunos_encontrados) then
+					        param_table1.Add "border=0; cellborder=0" 
+							Table.Rows.Add(linha_nula)
+							linha = linha+1
+					        param_table1.Add "border=1; cellborder=1" 
+							Table.Rows.Add(celula)
+							linha = linha+1
+						end if
 					end if
-					
+
 				
 					if limite>100 then
 						response.Write("ERRO!")
@@ -438,6 +436,7 @@ for i=0 to ubound(conjunto_dados)
 					end if 
 				end if
 			next	
+			Page.Canvas.DrawTable Table, "x="&x_primeira_tabela&", y="&y_primeira_tabela&""
 	
 			y_declaracao=margem*4
 						

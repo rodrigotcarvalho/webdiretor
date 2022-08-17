@@ -267,7 +267,7 @@ for tm=0 to ubound(materias)
 '	response.Write(vetor_mes&"<BR>")
 '	response.Write(vetor_aulas&"<BR>")
 '	response.Write(vetor_nu_aulas&"<BR>")
-'	response.Write(vetor_data_colspan&"<BR>")
+	response.Write(vetor_data_colspan&"<BR>")
 '	response.Write(vetor_seq_pauta&"<BR>")	
 	if aulas_check>0 then
 		mes = split(vetor_mes,"#$#")
@@ -329,7 +329,7 @@ for tm=0 to ubound(materias)
 		'	response.Write(vetor_mes_colspan&" ok <BR>")		
 			end if	
 		
-			if conta_tempos_temp>colunas_de_notas then
+			if conta_tempos_temp>=colunas_de_notas then
 				conta_tempos = aula_colspan_encontradas(t)		
 				vetor_mes_colspan = vetor_mes_colspan&"#$#"&colunas_preenchidas
 				'vetor_mes_colspan = vetor_mes_colspan&"$$$"&colunas_preenchidas
@@ -637,12 +637,12 @@ for tm=0 to ubound(materias)
 		pg_nu_aulas_encontradas = split(vetor_nu_aulas, "$$$" )		
 		pg_aula_colspan_encontradas = split(vetor_data_colspan, "$$$" )
 		pg_seq_pauta = split(vetor_seq_pauta, "$$$" )	
-		response.Write(vetor_meses&"<BR>")
-		response.Write(vetor_mes_colspan&"<BR>")
-		response.Write(vetor_aulas&"<BR>")
-		response.Write(vetor_nu_aulas&"<BR>")					
-		response.Write(vetor_data_colspan&"csp<BR>")
-		response.Write(vetor_seq_pauta&"<BR>")				
+		'response.Write(vetor_meses&"<BR>")
+		'response.Write(vetor_mes_colspan&"<BR>")
+		'response.Write(vetor_aulas&"<BR>")
+		'response.Write(vetor_nu_aulas&"<BR>")					
+		'response.Write(vetor_data_colspan&"csp<BR>")
+		'response.Write(vetor_seq_pauta&"<BR>")				
 		for pg =0 to ubound(pg_aula_colspan_encontradas)
 		
 			meses_encontrados = split(pg_mes(pg),"#$#")
@@ -852,6 +852,7 @@ for tm=0 to ubound(materias)
 							
 				tabela_col=3		
 				for a=0 to ubound(aulas_encontrados)
+					response.write(aulas_encontrados(a)&"="&aula_colspan_encontradas(a)&"/"&tabela_col&"*"&total_de_colunas&"<BR>")
 					if aula_colspan_encontradas(a)	>1 then
 						Notas_Tit(2, tabela_col).ColSpan = aula_colspan_encontradas(a)			
 					end if
